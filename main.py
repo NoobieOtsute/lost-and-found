@@ -8,10 +8,10 @@ ctk.set_default_color_theme('dark-blue')
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("380x440")
+        self.geometry("380x440+700+260")
         self.title("Lost and Found")
         self.iconbitmap('magnifyingglass_102622.ico')
-
+        self.resizable(False,False)
 
         # add widgets to app
         self.loginFrame = LoginFrame(master=self)
@@ -50,8 +50,9 @@ def login_clicked(userAndPassword):
         if searchUser(userAndPassword[0], userAndPassword[1]) != []:
             print('invoked!')
             app.loginFrame.pack_forget()
-            app.mainFrame.pack(pady=30)
-            app.geometry(f'{app.winfo_screenwidth}x{app.winfo_screenheight}')
+            app.mainFrame.pack()
+            app.geometry('900x700+380+50')
+            
         else:
             app.loginFrame.warning.configure(text='Wrong username or password')
     else:
@@ -60,7 +61,36 @@ def login_clicked(userAndPassword):
 class MainFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self._width = 200
+        
+        self.searchFrame = SearchBarFrame(self, corner_radius=0)
+        self.searchFrame.grid(row=0,column=0,padx=0,pady=0,sticky='ne')
+        self.listFrame = ListFrame(self, width=402, height=614, corner_radius=0,border_width=5)
+        self.listFrame.grid(row=1,column=0,padx=0,pady=0,sticky='ne')
+        self.detailFrame = DetailFrame(self, width=477, height=701,border_width=5, corner_radius=0)
+        self.detailFrame.grid(row=0,column=1,rowspan=2,padx=0,pady=0,sticky='nw')
+
+        
+        
+class SearchBarFrame(ctk.CTkFrame): # Width = 400px, Height = 350px
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.searchBar = ctk.CTkEntry(self, corner_radius=7,width=250, placeholder_text='lost item name')
+        self.searchBar.grid(row=0,column=0,padx=10,pady=(10,0))
+        self.sortingCategory = ctk.CTkComboBox(self, values=['Date Found', 'Location Found', 'Category'])
+        self.sortingCategory.grid(row=0,column=1,padx=(0,11),pady=(10,0))
+        self.list = ctk.CTkButton(self,text='Search')
+        self.list.grid(row=1,column=0,sticky="w",padx=10,pady=5)
+        self.sortOption = ctk.CTkLabel(self, text='^ Sort option')
+        self.sortOption.grid(row=1,column=1,padx=5)
+
+
+class DetailFrame(ctk.CTkFrame): # Width = 450px, Height = 500px
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+class ListFrame(ctk.CTkScrollableFrame): # scrollable
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
 
 
 app = App()
