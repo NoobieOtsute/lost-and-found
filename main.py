@@ -8,19 +8,20 @@ ctk.set_default_color_theme('dark-blue')
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("380x440+700+260")
+        self.geometry("380x430+700+260")
+        self.overrideredirect(True)
         self.title("Lost and Found")
         self.iconbitmap('magnifyingglass_102622.ico')
         self.resizable(False,False)
 
         # add widgets to app
-        self.loginFrame = LoginFrame(master=self)
+
+        self.loginFrame = LoginFrame(master=self, corner_radius=30)
         self.loginFrame.pack(pady=30)
         self.mainFrame = MainFrame(self)
 
+
         # add methods to app
-        def afterLogin(self):
-            pass
 
 class LoginFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -30,11 +31,11 @@ class LoginFrame(ctk.CTkFrame):
         self._fg_color = '#092851'
 
         # add widgets onto the frame...
-        self.label = ctk.CTkLabel(master=self, width=300, bg_color='#092851', text='LOGIN', font=('Stone Sans', 40), text_color='#E9A93B')
-        self.label.grid(row=0, column=0, columnspan=2, padx=20, pady=(50, 50), sticky="nsew")
-        self.usernameL = ctk.CTkLabel(master=self, bg_color='#092851', text='Username', font=('Stone Sans', 20), text_color='#E9A93B')
+        self.label = ctk.CTkLabel(master=self, width=300, bg_color='#092851', text='SIGN IN', font=('Trebuchet MS bold', 40), text_color='#E9A93B')
+        self.label.grid(row=0, column=0, columnspan=2, padx=20, pady=(40, 40), sticky="nsew")
+        self.usernameL = ctk.CTkLabel(master=self, bg_color='#092851', text='Username', font=('Trebuchet MS', 17), text_color='#E9A93B')
         self.usernameL.grid(row=1, column=0, padx=(20,0), pady=15, sticky="nsew")
-        self.passwordL = ctk.CTkLabel(master=self, bg_color='#092851', text='Password', font=('Stone Sans', 20), text_color='#E9A93B')
+        self.passwordL = ctk.CTkLabel(master=self, bg_color='#092851', text='Password', font=('Trebuchet MS', 17), text_color='#E9A93B')
         self.passwordL.grid(row=2, column=0, padx=(20,0), pady=15, sticky="nsew")
         self.username = ctk.CTkEntry(self, corner_radius=7, border_color='black', width=150)
         self.username.grid(row=1, column=1, padx=(0,20), pady=15, sticky="nsew")
@@ -42,8 +43,11 @@ class LoginFrame(ctk.CTkFrame):
         self.password.grid(row=2, column=1, padx=(0,20), pady=15, sticky="nsew")
         self.button = ctk.CTkButton(self, width=100, corner_radius=7, border_color='black', text='Login', fg_color='#E9A93B', text_color='black', command=lambda : login_clicked([self.username.get(), self.password.get()]))
         self.button.grid(row=3, column=0, columnspan=2, padx=20, pady=(20,0), sticky="nsew")
-        self.warning = ctk.CTkLabel(self, bg_color='#092851', text='',font=('Stone Sans', 15), text_color='red')
-        self.warning.grid(row=4, column=0,columnspan=2, padx=20, pady=(20,80), sticky="nsew")
+        self.exitbutton = ctk.CTkButton(self, width=75, corner_radius=7, border_color='black', text='exit', fg_color='#E9A93B', text_color='black', command=close)
+        self.exitbutton.grid(row=4,column=0,padx=(20,10),pady=(20,40), sticky='w')
+        self.warning = ctk.CTkLabel(self, bg_color='#092851', text='',font=('Trebuchet MS', 15), text_color='red')
+        self.warning.grid(row=4, column=1, padx=(0,20), pady=(20,40), sticky="nw")
+        
 
 def login_clicked(userAndPassword):
     if '' not in userAndPassword:
@@ -57,6 +61,9 @@ def login_clicked(userAndPassword):
             app.loginFrame.warning.configure(text='Wrong username or password')
     else:
         app.loginFrame.warning.configure(text='Empty field')
+
+def close():
+    app.destroy()
 
 class MainFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
