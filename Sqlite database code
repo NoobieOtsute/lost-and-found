@@ -1,0 +1,28 @@
+import sqlite3
+
+conn = sqlite3.connect('database.db')
+
+c = conn.cursor()
+
+#c.execute("""CREATE TABLE lostItems (
+#    itemName text,
+#    category text
+#  )""")
+
+#c.execute("""CREATE TABLE users (
+#    username text,
+#    password text
+#  )""")
+
+  
+def searchItem(item):
+  c.execute("SELECT * from lostItems WHERE itemName=?",(item,))
+  conn.commit()
+  print(c.fetchall())
+
+def addItem(item,category):
+  c.execute("INSERT INTO lostItems (itemName,category) VALUES (?,?)",(item,category))
+  conn.commit()
+
+
+conn.close()
