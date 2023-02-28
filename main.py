@@ -6,10 +6,13 @@ ctk.set_appearance_mode('system')
 ctk.set_default_color_theme('dark-blue')
 
 
+
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("380x430+700+260")
+        self.myFont = ctk.CTkFont(family="Consolas", size=12)
+        # self.geometry("380x430+700+260")
+        self.geometry('900x700+380+50')
         # self.overrideredirect(True)
         self.title("Lost and Found")
         self.iconbitmap('magnifyingglass_102622.ico')
@@ -18,8 +21,9 @@ class App(ctk.CTk):
         # add widgets to app
 
         self.loginFrame = LoginFrame(master=self, corner_radius=30)
-        self.loginFrame.pack(pady=30)
-        self.mainFrame = MainFrame(self, fg_color='darkgray', corner_radius=0)
+        # self.loginFrame.pack(pady=30)
+        self.mainFrame = MainFrame(self, fg_color='darkgray', corner_radius=0, Font=self.myFont)
+        self.mainFrame.pack()
 
 
         # add methods to app
@@ -76,40 +80,90 @@ def close():
     app.destroy()
 
 class MainFrame(ctk.CTkFrame):
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
         
-        self.searchFrame = SearchBarFrame(self, corner_radius=0, width=400)
+        self.searchFrame = SearchBarFrame(self, corner_radius=0, width=400, Font=Font)
         self.searchFrame.grid(row=0,column=0,padx=5,pady=5,sticky='nsew')
-        self.listFrame = ListFrame(self, width=400, height=580, corner_radius=0)
+        self.listFrame = ListFrame(self, width=400, height=580, corner_radius=0, Font=Font)
         self.listFrame.grid(row=1,column=0,padx=5,pady=(0,5),sticky='nsew')
-        self.detailFrame = DetailFrame(self, width=470, height=690, corner_radius=0)
+        self.detailFrame = DetailFrame(self, width=470, height=690, corner_radius=0, Font=Font)
         self.detailFrame.grid(row=0,column=1,rowspan=2,padx=(0,5),pady=5,sticky='nsew')
 
-        
+    def comboboxCallback(self,choice):
+        # if choice == "Date Found":
+        pass
+
+
         
 class SearchBarFrame(ctk.CTkFrame): # Width = 400px, Height = 350px
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
-        self.searchBar = ctk.CTkEntry(self, corner_radius=7,width=250, placeholder_text='lost item name')
+        self.searchBar = ctk.CTkEntry(self, corner_radius=7,width=250, placeholder_text='lost item name', font=Font)
         self.searchBar.grid(row=0,column=0,padx=10,pady=(10,0))
-        self.sortingCategory = ctk.CTkComboBox(self, values=['Date Found', 'Location Found', 'Category'], width=110)
+        self.sortingCategory = ctk.CTkComboBox(self, values=['Date Found', 'Location Found', 'Category'], width=110, font=Font, command=master.comboboxCallback)
         self.sortingCategory.grid(row=0,column=1,padx=(0,10),pady=(10,0))
-        self.list = ctk.CTkButton(self,text='Search')
+        self.list = ctk.CTkButton(self,text='Search', font=Font)
         self.list.grid(row=1,column=0,sticky="w",padx=10,pady=10)
-        self.sortOption = ctk.CTkLabel(self, text='^ Sort option')
+        self.sortOption = ctk.CTkLabel(self, text='^ Sort option', font=Font)
         self.sortOption.grid(row=1,column=1,padx=5)
 
 
-
 class DetailFrame(ctk.CTkFrame): # Width = 450px, Height = 500px
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
+        self.Font = Font
 
-class ListFrame(ctk.CTkScrollableFrame): # scrollable
-    def __init__(self, master, **kwargs):
+
+
+
+class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
+    def __init__(self, master, Font, itemList=[], **kwargs):
         super().__init__(master, **kwargs)
+        self.Font = Font
+        self.itemList = itemList
 
+
+        self.fieldName = ctk.CTkLabel(self,text="  Item Name    |    Category    |     Date     |    Location", font=self.Font, anchor='w')
+        self.fieldName.pack(side='top', fill='x', padx=0)
+
+        self.buttonArray = self.createButtonArray(listItemCategory())
+        for i in self.buttonArray:
+            i[0].pack(side='top',fill='x', pady=0)
+
+        
+    def createButtonArray(self,itemList):
+        buttonArray = []
+        for i in itemList:
+            buttonArray.append([ctk.CTkButton(self,text=self.format(i[0],i[1],i[2],i[3]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w'), i[0]])
+        return buttonArray
+    
+    def unpack(self,buttonArray):
+        for i in buttonArray:
+            i[0].pack_forget()
+
+    def buttonPack(self,buttonArray,newItemList):
+        newButtonArray = buttonArray
+        for i in newItemList:
+            for j in newButtonArray:
+                if i[0] == j[1]:
+                    j[0].pack(side='top', fill='x')
+                    newButtonArray.remove(j)
+
+    def format(self,name,category,date,location):
+        spaceNum = int((15-len(name) + ((15-len(name)) % 2))/2)
+        print(spaceNum, 13-len(name), 13-len(name)%2)
+        nameString = " "*spaceNum + name + " "*spaceNum 
+        spaceNum = int((15-len(category) + ((15-len(category)) % 2))/2)
+        catString = " "*spaceNum + category + " "*spaceNum 
+        spaceNum = int((12-len(date) + ((12-len(date)) % 2))/2)
+        dateString = " "*spaceNum + date + " "*spaceNum 
+        spaceNum = int((15-len(location) + ((15-len(location)) % 2))/2)
+        locString = " "*spaceNum + location
+        return nameString + catString + dateString + locString
+
+        
+        
 
 app = App()
 app.mainloop()

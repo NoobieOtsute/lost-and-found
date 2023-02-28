@@ -6,7 +6,9 @@ c = conn.cursor()
 
 # c.execute("""CREATE TABLE lostItems (
   #  itemName text,
-  #  category text
+  #  category text,
+  #  dateFound text,
+  #  locationFound text
 #  )""")
 
 # c.execute("""CREATE TABLE users (
@@ -20,8 +22,8 @@ def searchItem(item):
   conn.commit()
   print(c.fetchall())
 
-def addItem(item,category):
-  c.execute("INSERT INTO lostItems (itemName,category) VALUES (?,?)",(item,category))
+def addItem(item,category,date,location):
+  c.execute("INSERT INTO lostItems (itemName,category,dateFound,locationFound) VALUES (?,?,?,?)",(item,category,date,location))
   conn.commit()
 
 def addUser(username,password):
@@ -37,8 +39,19 @@ def searchUser(username,password):
   conn.close()
   return info
 
-# addItem('hat', 'clothing')
+def listItemCategory():
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
+  c.execute("SELECT * from lostItems ORDER BY category")
+  items = c.fetchall()
+  conn.close()
+  return items
+
+# addItem('sweater', 'clothing', '27/2/2023', 'WEC')
 # addUser('Otsute', '123')
+
+print(listItemCategory())
+
 
 
 conn.close()
