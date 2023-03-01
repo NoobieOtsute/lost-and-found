@@ -4,7 +4,7 @@ from Database import *
 
 ctk.set_appearance_mode('system')
 ctk.set_default_color_theme('dark-blue')
-
+button = 0
 
 
 class App(ctk.CTk):
@@ -66,7 +66,6 @@ class LoginFrame(ctk.CTkFrame):
 def login_clicked(userAndPassword):
     if '' not in userAndPassword:
         if searchUser(userAndPassword[0], userAndPassword[1]) != []:
-            print('invoked!')
             app.loginFrame.pack_forget()
             app.mainFrame.pack()
             app.geometry('900x700+380+50') # Main window size
@@ -85,14 +84,28 @@ class MainFrame(ctk.CTkFrame):
         
         self.searchFrame = SearchBarFrame(self, corner_radius=0, width=400, Font=Font)
         self.searchFrame.grid(row=0,column=0,padx=5,pady=5,sticky='nsew')
-        self.listFrame = ListFrame(self, width=400, height=580, corner_radius=0, Font=Font)
+        self.listFrame = ListFrame(self, width=430, height=580, corner_radius=0, Font=Font)
         self.listFrame.grid(row=1,column=0,padx=5,pady=(0,5),sticky='nsew')
-        self.detailFrame = DetailFrame(self, width=470, height=690, corner_radius=0, Font=Font)
+        self.detailFrame = DetailFrame(self, width=440, height=690, corner_radius=0, Font=Font)
         self.detailFrame.grid(row=0,column=1,rowspan=2,padx=(0,5),pady=5,sticky='nsew')
 
     def comboboxCallback(self,choice):
-        # if choice == "Date Found":
-        pass
+        if choice == "Date Found":
+            listItem = listItemDate()
+            self.listFrame.unpack()
+            self.listFrame.buttonPack(listItem)
+        elif choice == "Location Found":
+            listItem = listItemLocation()
+            self.listFrame.unpack()
+            self.listFrame.buttonPack(listItem)
+        else:
+            listItem = listItemCategory()
+            self.listFrame.unpack()
+            self.listFrame.buttonPack(listItem)
+
+    def itemClicked(self, index):
+        item = self.listFrame.buttonArray[index]
+
 
 
         
@@ -109,7 +122,7 @@ class SearchBarFrame(ctk.CTkFrame): # Width = 400px, Height = 350px
         self.sortOption.grid(row=1,column=1,padx=5)
 
 
-class DetailFrame(ctk.CTkFrame): # Width = 450px, Height = 500px
+class DetailFrame(ctk.CTkFrame): 
     def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
         self.Font = Font
@@ -118,41 +131,42 @@ class DetailFrame(ctk.CTkFrame): # Width = 450px, Height = 500px
 
 
 class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
-    def __init__(self, master, Font, itemList=[], **kwargs):
+    def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
         self.Font = Font
-        self.itemList = itemList
+        self.itemList = listItemDate()
 
 
-        self.fieldName = ctk.CTkLabel(self,text="  Item Name    |    Category    |     Date     |    Location", font=self.Font, anchor='w')
+        self.fieldName = ctk.CTkLabel(self,text="  ItemName    |    Category    |     Date     |    Location", font=self.Font, anchor='w')
         self.fieldName.pack(side='top', fill='x', padx=0)
 
-        self.buttonArray = self.createButtonArray(listItemCategory())
+        self.buttonArray = self.createButtonArray(master)
         for i in self.buttonArray:
             i[0].pack(side='top',fill='x', pady=0)
 
         
-    def createButtonArray(self,itemList):
+    def createButtonArray(self,master):
         buttonArray = []
-        for i in itemList:
-            buttonArray.append([ctk.CTkButton(self,text=self.format(i[0],i[1],i[2],i[3]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w'), i[0]])
+        count = 0
+        for i in self.itemList:
+            buttonArray.append([ctk.CTkButton(self,text=self.format(i[0],i[1],i[2],i[3]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w', command=lambda:master.buttonClicked()), i[0], count])
+            count += 1
         return buttonArray
     
-    def unpack(self,buttonArray):
-        for i in buttonArray:
+    def unpack(self):
+        for i in self.buttonArray:
             i[0].pack_forget()
 
-    def buttonPack(self,buttonArray,newItemList):
-        newButtonArray = buttonArray
-        for i in newItemList:
+    def buttonPack(self,newItemList):
+        self.itemList = newItemList
+        newButtonArray = self.buttonArray
+        for i in self.itemList:
             for j in newButtonArray:
                 if i[0] == j[1]:
                     j[0].pack(side='top', fill='x')
-                    newButtonArray.remove(j)
 
     def format(self,name,category,date,location):
-        spaceNum = int((15-len(name) + ((15-len(name)) % 2))/2)
-        print(spaceNum, 13-len(name), 13-len(name)%2)
+        spaceNum = int((13-len(name) + ((13-len(name)) % 2))/2)
         nameString = " "*spaceNum + name + " "*spaceNum 
         spaceNum = int((15-len(category) + ((15-len(category)) % 2))/2)
         catString = " "*spaceNum + category + " "*spaceNum 
@@ -162,7 +176,6 @@ class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
         locString = " "*spaceNum + location
         return nameString + catString + dateString + locString
 
-        
         
 
 app = App()

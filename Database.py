@@ -47,10 +47,29 @@ def listItemCategory():
   conn.close()
   return items
 
-# addItem('sweater', 'clothing', '27/2/2023', 'WEC')
+def listItemDate():
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
+  c.execute("SELECT * from lostItems ORDER BY dateFound")
+  items = c.fetchall()
+  conn.close()
+  return items
+
+def listItemLocation():
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
+  c.execute("SELECT * from lostItems ORDER BY locationFound")
+  items = c.fetchall()
+  conn.close()
+  return items
+
+# addItem('books', 'stationary', '27/2/2023', 'WEC')
+# addItem('pen', 'stationary', '26/2/2023', 'SB')
+# addItem('bag', 'bag', '26/2/2023', 'SB')
+
 # addUser('Otsute', '123')
 
-print(listItemCategory())
+# print(listItemCategory())
 
 
 
