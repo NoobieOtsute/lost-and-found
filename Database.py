@@ -5,15 +5,17 @@ conn = sqlite3.connect('database.db')
 c = conn.cursor()
 
 # c.execute("""CREATE TABLE lostItems (
-  #  itemName text,
-  #  category text,
-  #  dateFound text,
-  #  locationFound text
+#    id integer,
+#    itemName text,
+#    category text,
+#    dateFound text,
+#    locationFound text,
+#    detail text
 #  )""")
 
 # c.execute("""CREATE TABLE users (
-  #  username text,
-  #  password text
+#    username text,
+#    password text
 #  )""")
 
   
@@ -22,8 +24,8 @@ def searchItem(item):
   conn.commit()
   print(c.fetchall())
 
-def addItem(item,category,date,location):
-  c.execute("INSERT INTO lostItems (itemName,category,dateFound,locationFound) VALUES (?,?,?,?)",(item,category,date,location))
+def addItem(id,item,category,date,location,detail):
+  c.execute("INSERT INTO lostItems (id,itemName,category,dateFound,locationFound,detail) VALUES (?,?,?,?,?,?)",(id,item,category,date,location,detail))
   conn.commit()
 
 def addUser(username,password):
@@ -63,9 +65,12 @@ def listItemLocation():
   conn.close()
   return items
 
-# addItem('books', 'stationary', '27/2/2023', 'WEC')
-# addItem('pen', 'stationary', '26/2/2023', 'SB')
-# addItem('bag', 'bag', '26/2/2023', 'SB')
+# addItem(0,'books', 'stationary', '27/2/2023', 'WEC', 'blue, small')
+# addItem(1,'pen', 'stationary', '26/2/2023', 'SB', 'black')
+# addItem(2,'bag', 'bag', '26/2/2023', 'SB', 'adidas')
+# addItem(3,'hat', 'clothing', '28/2/2023', 'SC', 'nike')
+# addItem(4,'sweater', 'clothing', '27/2/2023', 'WEC', 'champion')
+
 
 # addUser('Otsute', '123')
 

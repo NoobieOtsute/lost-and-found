@@ -10,7 +10,7 @@ button = 0
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.myFont = ctk.CTkFont(family="Consolas", size=12)
+        self.myFont = ctk.CTkFont(family="Consolas", size=13)
         # self.geometry("380x430+700+260")
         self.geometry('900x700+380+50')
         # self.overrideredirect(True)
@@ -104,8 +104,10 @@ class MainFrame(ctk.CTkFrame):
             self.listFrame.buttonPack(listItem)
 
     def itemClicked(self, index):
-        item = self.listFrame.buttonArray[index]
-
+        print(index)
+        for i in self.listFrame.itemList:
+            if i[0] == self.listFrame.buttonArray[index][1]:
+                self.detailFrame.update(i[1], i[2], i[3], i[4], i[5])
 
 
         
@@ -127,7 +129,23 @@ class DetailFrame(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         self.Font = Font
 
+        self.name = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.name.pack(side='top',fill='x', padx=0, pady=5)
+        self.category = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.category.pack(side='top',fill='x', padx=0, pady=5)
+        self.dateFound = ctk.CTkLabel(self, width=440, font=self.Font,text="")
+        self.dateFound.pack(side='top',fill='x', padx=0, pady=5)
+        self.locationFound = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.locationFound.pack(side='top',fill='x', padx=0, pady=5)
+        self.detail = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.detail.pack(side='top',fill='x', padx=0, pady=5)
 
+    def update(self,name,cat,date,loc,detail):
+        self.name.configure(text=f"Item name: {name}")
+        self.category.configure(text=f"Category: {cat}")
+        self.dateFound.configure(text=f"Date found: {date}")
+        self.locationFound.configure(text=f"Location found: {loc}")
+        self.detail.configure(text=f"Details: {detail}")
 
 
 class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
@@ -135,7 +153,6 @@ class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
         super().__init__(master, **kwargs)
         self.Font = Font
         self.itemList = listItemDate()
-
 
         self.fieldName = ctk.CTkLabel(self,text="  ItemName    |    Category    |     Date     |    Location", font=self.Font, anchor='w')
         self.fieldName.pack(side='top', fill='x', padx=0)
@@ -149,7 +166,7 @@ class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
         buttonArray = []
         count = 0
         for i in self.itemList:
-            buttonArray.append([ctk.CTkButton(self,text=self.format(i[0],i[1],i[2],i[3]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w', command=lambda:master.buttonClicked()), i[0], count])
+            buttonArray.append([ctk.CTkButton(self,text=self.format(i[1],i[2],i[3],i[4]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w', command=lambda m=count:master.itemClicked(m)), i[0]])
             count += 1
         return buttonArray
     
