@@ -2,7 +2,7 @@ import customtkinter as ctk
 import tkinter
 from Database import *
 
-ctk.set_appearance_mode('system')
+ctk.set_appearance_mode('light')
 ctk.set_default_color_theme('dark-blue')
 button = 0
 
@@ -15,7 +15,7 @@ class App(ctk.CTk):
         self.geometry('900x700+380+50')
         # self.overrideredirect(True)
         self.title("Lost and Found")
-        self.iconbitmap('magnifyingglass_102622.ico')
+        self.iconbitmap(True,'magnifyingglass_102622.ico')
         self.resizable(False,False)
 
         # add widgets to app
@@ -24,6 +24,7 @@ class App(ctk.CTk):
         # self.loginFrame.pack(pady=30)
         self.mainFrame = MainFrame(self, fg_color='darkgray', corner_radius=0, Font=self.myFont)
         self.mainFrame.pack()
+        self.addWindow = None
 
 
         # add methods to app
@@ -81,7 +82,8 @@ def close():
 class MainFrame(ctk.CTkFrame):
     def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
-        
+        self.font = Font
+
         self.searchFrame = SearchBarFrame(self, corner_radius=0, width=400, Font=Font)
         self.searchFrame.grid(row=0,column=0,padx=5,pady=5,sticky='nsew')
         self.listFrame = ListFrame(self, width=430, height=580, corner_radius=0, Font=Font)
@@ -108,6 +110,13 @@ class MainFrame(ctk.CTkFrame):
         for i in self.listFrame.itemList:
             if i[0] == self.listFrame.buttonArray[index][1]:
                 self.detailFrame.update(i[1], i[2], i[3], i[4], i[5])
+    
+    def addItem(self):
+        if self.master.addWindow is None or not self.master.addWindow.winfo_exists():
+            self.master.addWindow = AddItemWindow(self, self.font)  # create window if its None or destroyed
+            self.master.addWindow.after(20, self.master.addWindow.lift)
+        else:
+            self.master.addWindow.focus()
 
 
         
@@ -139,6 +148,8 @@ class DetailFrame(ctk.CTkFrame):
         self.locationFound.pack(side='top',fill='x', padx=0, pady=5)
         self.detail = ctk.CTkLabel(self, width=440, font=self.Font, text="")
         self.detail.pack(side='top',fill='x', padx=0, pady=5)
+        self.addButton = ctk.CTkButton(self, text="+ Add Lost Item", font=self.Font, height=50, command=master.addItem)
+        self.addButton.pack(side='bottom', fill='x', pady=5, padx=5)
 
     def update(self,name,cat,date,loc,detail):
         self.name.configure(text=f"Item name: {name}")
@@ -193,7 +204,13 @@ class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
         locString = " "*spaceNum + location
         return nameString + catString + dateString + locString
 
-        
+class AddItemWindow(ctk.CTkToplevel):
+    def __init__(self, master, Font, **kwargs):
+        super().__init__(master, **kwargs)
+        self.geometry("380x430+700+260")
+        self.resizable(False,False)
+        self.title("Add Lost Item")
+
 
 app = App()
 app.mainloop()
