@@ -1,6 +1,10 @@
 import customtkinter as ctk
 import tkinter
+import numpy
+import cv2
+import os
 from Database import *
+from PIL import ImageTk, Image
 
 ctk.set_appearance_mode('light')
 ctk.set_default_color_theme('dark-blue')
@@ -11,8 +15,8 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.myFont = ctk.CTkFont(family="Consolas", size=13)
-        # self.geometry("380x430+700+260")
-        self.geometry('900x700+380+50')
+        self.geometry("380x430+700+260")
+        # self.geometry('900x700+380+50')
         # self.overrideredirect(True)
         self.title("Lost and Found")
         self.iconbitmap(True,'magnifyingglass_102622.ico')
@@ -21,9 +25,9 @@ class App(ctk.CTk):
         # add widgets to app
 
         self.loginFrame = LoginFrame(master=self, corner_radius=30)
-        # self.loginFrame.pack(pady=30)
+        self.loginFrame.pack(pady=30)
         self.mainFrame = MainFrame(self, fg_color='darkgray', corner_radius=0, Font=self.myFont)
-        self.mainFrame.pack()
+        # self.mainFrame.pack()
         self.addWindow = None
 
 
@@ -109,7 +113,7 @@ class MainFrame(ctk.CTkFrame):
         print(index)
         for i in self.listFrame.itemList:
             if i[0] == self.listFrame.buttonArray[index][1]:
-                self.detailFrame.update(i[1], i[2], i[3], i[4], i[5])
+                self.detailFrame.update(i[1], i[2], i[3], i[4], i[5], i[6])
     
     def addItem(self):
         if self.master.addWindow is None or not self.master.addWindow.winfo_exists():
@@ -138,6 +142,8 @@ class DetailFrame(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         self.Font = Font
 
+        self.image = ctk.CTkLabel(self, width=440, text = "")
+        self.image.pack(side='top',fill='x', padx=0, pady=5)
         self.name = ctk.CTkLabel(self, width=440, font=self.Font, text="")
         self.name.pack(side='top',fill='x', padx=0, pady=5)
         self.category = ctk.CTkLabel(self, width=440, font=self.Font, text="")
@@ -151,12 +157,18 @@ class DetailFrame(ctk.CTkFrame):
         self.addButton = ctk.CTkButton(self, text="+ Add Lost Item", font=self.Font, height=50, command=master.addItem)
         self.addButton.pack(side='bottom', fill='x', pady=5, padx=5)
 
-    def update(self,name,cat,date,loc,detail):
+    def update(self,name,cat,date,loc,detail,image):
         self.name.configure(text=f"Item name: {name}")
         self.category.configure(text=f"Category: {cat}")
         self.dateFound.configure(text=f"Date found: {date}")
         self.locationFound.configure(text=f"Location found: {loc}")
         self.detail.configure(text=f"Details: {detail}")
+        rawImg = Image.open(image)
+        wpercent = (380/float(rawImg.size[0]))
+        hsize = int((float(rawImg.size[1])*float(wpercent)))
+        rawImg = rawImg.resize((380,hsize), Image.Resampling.LANCZOS)
+        img = ImageTk.PhotoImage(rawImg)
+        self.image.configure(image=img)
 
 
 class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
@@ -211,6 +223,15 @@ class AddItemWindow(ctk.CTkToplevel):
         self.resizable(False,False)
         self.title("Add Lost Item")
 
+        self.imageEntry = ctk.CTkEntry(self,placeholder_text="path to your image file", font=Font)
+        self.imageEntry.bind('<Return>',lambda m:self.storeImage(self.imageEntry.get()))
+        self.imageEntry.pack()
+
+    def storeImage(self,filePath):
+        fileName = os.path.split(filePath)[1]
+        img = cv2.imread(filePath)
+        print(fileName)
+        cv2.imwrite(r'C:/Users/Tetsuo.Prac2023/Desktop/LostAndFound/Images/' + fileName, img)
 
 app = App()
 app.mainloop()

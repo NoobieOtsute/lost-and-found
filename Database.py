@@ -10,7 +10,8 @@ c = conn.cursor()
 #    category text,
 #    dateFound text,
 #    locationFound text,
-#    detail text
+#    detail text,
+#    imageName text
 #  )""")
 
 # c.execute("""CREATE TABLE users (
@@ -24,8 +25,8 @@ def searchItem(item):
   conn.commit()
   print(c.fetchall())
 
-def addItem(id,item,category,date,location,detail):
-  c.execute("INSERT INTO lostItems (id,itemName,category,dateFound,locationFound,detail) VALUES (?,?,?,?,?,?)",(id,item,category,date,location,detail))
+def addItem(id,item,category,date,location,detail,image):
+  c.execute("INSERT INTO lostItems (id,itemName,category,dateFound,locationFound,detail,imageName) VALUES (?,?,?,?,?,?,?)",(id,item,category,date,location,detail,image))
   conn.commit()
 
 def addUser(username,password):
@@ -67,7 +68,7 @@ def listItemLocation():
 
 # addItem(0,'books', 'stationary', '27/2/2023', 'WEC', 'blue, small')
 # addItem(1,'pen', 'stationary', '26/2/2023', 'SB', 'black')
-# addItem(2,'bag', 'bag', '26/2/2023', 'SB', 'adidas')
+# addItem(3,'bag', 'bag', '26/2/2023', 'SB', 'adidas', r'C:\Users\Tetsuo.Prac2023\Desktop\LostAndFound\Images\bag.jpg')
 # addItem(3,'hat', 'clothing', '28/2/2023', 'SC', 'nike')
 # addItem(4,'sweater', 'clothing', '27/2/2023', 'WEC', 'champion')
 
