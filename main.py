@@ -1,5 +1,4 @@
 import customtkinter as ctk
-import tkinter
 import numpy
 import cv2
 import os
@@ -15,8 +14,8 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.myFont = ctk.CTkFont(family="Consolas", size=13)
-        self.geometry("380x430+700+260")
-        # self.geometry('900x700+380+50')
+        # self.geometry("380x430+700+260")
+        self.geometry('900x700+380+50')
         # self.overrideredirect(True)
         self.title("Lost and Found")
         self.iconbitmap(True,'magnifyingglass_102622.ico')
@@ -25,9 +24,9 @@ class App(ctk.CTk):
         # add widgets to app
 
         self.loginFrame = LoginFrame(master=self, corner_radius=30)
-        self.loginFrame.pack(pady=30)
+        # self.loginFrame.pack(pady=30)
         self.mainFrame = MainFrame(self, fg_color='darkgray', corner_radius=0, Font=self.myFont)
-        # self.mainFrame.pack()
+        self.mainFrame.pack()
         self.addWindow = None
 
 
@@ -127,14 +126,16 @@ class MainFrame(ctk.CTkFrame):
 class SearchBarFrame(ctk.CTkFrame): # Width = 400px, Height = 350px
     def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
-        self.searchBar = ctk.CTkEntry(self, corner_radius=7,width=250, placeholder_text='lost item name', font=Font)
-        self.searchBar.grid(row=0,column=0,padx=10,pady=(10,0))
+        self.searchBar = ctk.CTkEntry(self, corner_radius=7,width=275, placeholder_text='lost item name', font=Font)
+        self.searchBar.grid(row=0,column=0,columnspan=2,padx=10,pady=(10,0))
         self.sortingCategory = ctk.CTkComboBox(self, values=['Date Found', 'Location Found', 'Category'], width=110, font=Font, command=master.comboboxCallback)
-        self.sortingCategory.grid(row=0,column=1,padx=(0,10),pady=(10,0))
+        self.sortingCategory.grid(row=0,column=2,padx=(0,10),pady=(10,0))
         self.list = ctk.CTkButton(self,text='Search', font=Font)
         self.list.grid(row=1,column=0,sticky="w",padx=10,pady=10)
+        self.addButton = ctk.CTkButton(self, text="+ Add Lost Item", font=Font, command=master.addItem)
+        self.addButton.grid(row=1,column=1,padx=5)
         self.sortOption = ctk.CTkLabel(self, text='^ Sort option', font=Font)
-        self.sortOption.grid(row=1,column=1,padx=5)
+        self.sortOption.grid(row=1,column=2,padx=5)
 
 
 class DetailFrame(ctk.CTkFrame): 
@@ -154,8 +155,6 @@ class DetailFrame(ctk.CTkFrame):
         self.locationFound.pack(side='top',fill='x', padx=0, pady=5)
         self.detail = ctk.CTkLabel(self, width=440, font=self.Font, text="")
         self.detail.pack(side='top',fill='x', padx=0, pady=5)
-        self.addButton = ctk.CTkButton(self, text="+ Add Lost Item", font=self.Font, height=50, command=master.addItem)
-        self.addButton.pack(side='bottom', fill='x', pady=5, padx=5)
 
     def update(self,name,cat,date,loc,detail,image):
         self.name.configure(text=f"Item name: {name}")
@@ -222,16 +221,33 @@ class AddItemWindow(ctk.CTkToplevel):
         self.geometry("380x430+700+260")
         self.resizable(False,False)
         self.title("Add Lost Item")
+        self.myFont = ctk.CTkFont(family="Consolas", size=15)
 
-        self.imageEntry = ctk.CTkEntry(self,placeholder_text="path to your image file", font=Font)
-        self.imageEntry.bind('<Return>',lambda m:self.storeImage(self.imageEntry.get()))
-        self.imageEntry.pack()
+        self.nameLabel = ctk.CTkLabel(self,text="Name that best describe the item:", font=self.myFont)
+        self.nameLabel.grid(row=0,column=0,sticky='w', padx=10)
+        self.name = ctk.CTkEntry(self,placeholder_text="Name", width=360)
+        self.name.grid(row=1,column=0,sticky='w', padx=10)
+        self.catLabel = ctk.CTkLabel(self,text="Choose the category that best fit the item:", font=self.myFont)
+        self.catLabel.grid(row=2,column=0,sticky='w',padx=10,pady=(10,0))
+        self.category = ctk.CTkComboBox(self,values=['Clothing', 'Bag', 'Stationary', 'Sports Equipment', 'Electronics', 'Accessory', 'Shoes'], font=self.myFont)
+        self.category.grid(row=3,column=0,sticky='w', padx=10)
+        self.dateLabel = ctk.CTkLabel(self,text="Date that item was found:", font=self.myFont)
+        self.dateLabel.grid(row=4,column=0,sticky='w', padx=10, pady=(10,0))
+        self.date = ctk.CTkEntry(self,placeholder_text="DD/MM/YYYY", width=360, font=self.myFont)
+        self.date.grid(row=5,column=0,sticky='w', padx=10)
+        self.locLabel = ctk.CTkLabel(self,text="Location that item was found:", font=self.myFont)
+        self.locLabel.grid(row=6,column=0,sticky='w', padx=10, pady=(10,0))
+        self.location = ctk.CTkComboBox(self,values=['SB', 'SC', 'PAC', 'WEC', 'CGA', 'Dining hall', 'Collingwood'], font=self.myFont)
+        self.location.grid(row=7,column=0,sticky='w', padx=10)
+        self.imageEntry = ctk.CTkEntry(self,placeholder_text="path to your image file", font=self.myFont)
+        # self.imageEntry.bind('<Return>',lambda m:self.storeImage(self.imageEntry.get()))
+        # self.imageEntry.grid()
 
     def storeImage(self,filePath):
         fileName = os.path.split(filePath)[1]
         img = cv2.imread(filePath)
         print(fileName)
-        cv2.imwrite(r'C:/Users/Tetsuo.Prac2023/Desktop/LostAndFound/Images/' + fileName, img)
+        cv2.imwrite(r'D:\Users\Otsute\VScode\LostAndFound\LostAndFound\Images/' + fileName, img)
 
 app = App()
 app.mainloop()

@@ -68,8 +68,8 @@ def listItemLocation():
 
 # addItem(0,'books', 'stationary', '27/2/2023', 'WEC', 'blue, small')
 # addItem(1,'pen', 'stationary', '26/2/2023', 'SB', 'black')
-# addItem(3,'bag', 'bag', '26/2/2023', 'SB', 'adidas', r'C:\Users\Tetsuo.Prac2023\Desktop\LostAndFound\Images\bag.jpg')
-# addItem(3,'hat', 'clothing', '28/2/2023', 'SC', 'nike')
+# addItem(2,'bag', 'bag', '26/2/2023', 'SB', 'adidas', r'D:\Users\Otsute\VScode\LostAndFound\LostAndFound\Images\bag.jpg')
+# addItem(3,'hat', 'clothing', '28/2/2023', 'SC', 'nike', r'D:\Users\Otsute\VScode\LostAndFound\LostAndFound\Images\hat.png')
 # addItem(4,'sweater', 'clothing', '27/2/2023', 'WEC', 'champion')
 
 
