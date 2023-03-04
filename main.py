@@ -90,11 +90,11 @@ class MainFrame(ctk.CTkFrame):
         self.font = Font
         self.choice = "Date Found"
 
-        self.searchFrame = SearchBarFrame(self, corner_radius=0, width=400, Font=Font)
+        self.searchFrame = SearchBarFrame(self, corner_radius=10, width=400, Font=Font)
         self.searchFrame.grid(row=0,column=0,padx=5,pady=5,sticky='nsew')
-        self.listFrame = ListFrame(self, width=430, height=580, corner_radius=0, Font=Font)
+        self.listFrame = ListFrame(self, width=430, height=577, corner_radius=10, Font=Font)
         self.listFrame.grid(row=1,column=0,padx=5,pady=(0,5),sticky='nsew')
-        self.detailFrame = DetailFrame(self, width=440, height=690, corner_radius=0, Font=Font)
+        self.detailFrame = DetailFrame(self, width=430, height=690, corner_radius=10, Font=Font)
         self.detailFrame.grid(row=0,column=1,rowspan=2,padx=(0,5),pady=5,sticky='nsew')
 
     def comboboxCallback(self,choice):
@@ -158,15 +158,15 @@ class DetailFrame(ctk.CTkFrame):
 
         self.image = ctk.CTkLabel(self, width=380, text = "")
         self.image.pack(side='top', padx=0, pady=5)
-        self.name = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
+        self.name = ctk.CTkLabel(self, width=426, font=self.Font, text="",anchor='w')
         self.name.pack(side='top',fill='x', padx=0, pady=5)
-        self.category = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
+        self.category = ctk.CTkLabel(self, width=426, font=self.Font, text="",anchor='w')
         self.category.pack(side='top',fill='x', padx=0, pady=5)
-        self.dateFound = ctk.CTkLabel(self, width=440, font=self.Font,text="",anchor='w')
+        self.dateFound = ctk.CTkLabel(self, width=426, font=self.Font,text="",anchor='w')
         self.dateFound.pack(side='top',fill='x', padx=0, pady=5)
-        self.locationFound = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
+        self.locationFound = ctk.CTkLabel(self, width=426, font=self.Font, text="",anchor='w')
         self.locationFound.pack(side='top',fill='x', padx=0, pady=5)
-        self.detail = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
+        self.detail = ctk.CTkLabel(self, width=426, font=self.Font, text="",anchor='w')
         self.detail.pack(side='top',fill='x', padx=0, pady=5)
 
     def update(self,name,cat,date,loc,detail,image):
