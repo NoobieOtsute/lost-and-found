@@ -21,13 +21,21 @@ c = conn.cursor()
 
   
 def searchItem(item):
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
   c.execute("SELECT * from lostItems WHERE itemName=?",(item,))
   conn.commit()
-  print(c.fetchall())
+  list = c.fetchall()
+  # print(list)
+  conn.close()
+  return list
 
 def addItem(id,item,category,date,location,detail,image):
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
   c.execute("INSERT INTO lostItems (id,itemName,category,dateFound,locationFound,detail,imageName) VALUES (?,?,?,?,?,?,?)",(id,item,category,date,location,detail,image))
   conn.commit()
+  conn.close()
 
 def addUser(username,password):
   c.execute("INSERT INTO users (username,password) VALUES (?,?)",(username,password))
@@ -66,6 +74,14 @@ def listItemLocation():
   conn.close()
   return items
 
+def LastID():
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
+  c.execute("SELECT * FROM lostItems WHERE id=(SELECT max(id) FROM lostItems)")
+  ID = c.fetchall()
+  conn.close()
+  return ID
+
 # addItem(0,'books', 'stationary', '27/2/2023', 'WEC', 'blue, small')
 # addItem(1,'pen', 'stationary', '26/2/2023', 'SB', 'black')
 # addItem(2,'bag', 'bag', '26/2/2023', 'SB', 'adidas', r'D:\Users\Otsute\VScode\LostAndFound\LostAndFound\Images\bag.jpg')
@@ -76,7 +92,5 @@ def listItemLocation():
 # addUser('Otsute', '123')
 
 # print(listItemCategory())
-
-
 
 conn.close()

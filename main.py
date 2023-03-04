@@ -1,4 +1,6 @@
 import customtkinter as ctk
+import tkinter as tk
+from tkinter.filedialog import askopenfilename
 import numpy
 import cv2
 import os
@@ -86,6 +88,7 @@ class MainFrame(ctk.CTkFrame):
     def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
         self.font = Font
+        self.choice = "Date Found"
 
         self.searchFrame = SearchBarFrame(self, corner_radius=0, width=400, Font=Font)
         self.searchFrame.grid(row=0,column=0,padx=5,pady=5,sticky='nsew')
@@ -95,6 +98,7 @@ class MainFrame(ctk.CTkFrame):
         self.detailFrame.grid(row=0,column=1,rowspan=2,padx=(0,5),pady=5,sticky='nsew')
 
     def comboboxCallback(self,choice):
+        self.choice = choice
         if choice == "Date Found":
             listItem = listItemDate()
             self.listFrame.unpack()
@@ -121,8 +125,16 @@ class MainFrame(ctk.CTkFrame):
         else:
             self.master.addWindow.focus()
 
+    def changeItemList(self,name):
+        if name == "":
+            self.listFrame.unpack()
+            self.listFrame.buttonPack(self.listFrame.itemList)
+        else:
+            newItemList = searchItem(name)
+            self.listFrame.unpack()
+            self.listFrame.buttonPack(newItemList)
 
-        
+
 class SearchBarFrame(ctk.CTkFrame): # Width = 400px, Height = 350px
     def __init__(self, master, Font, **kwargs):
         super().__init__(master, **kwargs)
@@ -130,8 +142,9 @@ class SearchBarFrame(ctk.CTkFrame): # Width = 400px, Height = 350px
         self.searchBar.grid(row=0,column=0,columnspan=2,padx=10,pady=(10,0))
         self.sortingCategory = ctk.CTkComboBox(self, values=['Date Found', 'Location Found', 'Category'], width=110, font=Font, command=master.comboboxCallback)
         self.sortingCategory.grid(row=0,column=2,padx=(0,10),pady=(10,0))
-        self.list = ctk.CTkButton(self,text='Search', font=Font)
-        self.list.grid(row=1,column=0,sticky="w",padx=10,pady=10)
+        self.searchButton = ctk.CTkButton(self,text='Search', font=Font, command=lambda : master.changeItemList(self.searchBar.get()))
+        self.searchBar.bind("<Return>", lambda m :master.changeItemList(self.searchBar.get()))
+        self.searchButton.grid(row=1,column=0,sticky="w",padx=10,pady=10)
         self.addButton = ctk.CTkButton(self, text="+ Add Lost Item", font=Font, command=master.addItem)
         self.addButton.grid(row=1,column=1,padx=5)
         self.sortOption = ctk.CTkLabel(self, text='^ Sort option', font=Font)
@@ -143,31 +156,37 @@ class DetailFrame(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         self.Font = Font
 
-        self.image = ctk.CTkLabel(self, width=440, text = "")
-        self.image.pack(side='top',fill='x', padx=0, pady=5)
-        self.name = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.image = ctk.CTkLabel(self, width=380, text = "")
+        self.image.pack(side='top', padx=0, pady=5)
+        self.name = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
         self.name.pack(side='top',fill='x', padx=0, pady=5)
-        self.category = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.category = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
         self.category.pack(side='top',fill='x', padx=0, pady=5)
-        self.dateFound = ctk.CTkLabel(self, width=440, font=self.Font,text="")
+        self.dateFound = ctk.CTkLabel(self, width=440, font=self.Font,text="",anchor='w')
         self.dateFound.pack(side='top',fill='x', padx=0, pady=5)
-        self.locationFound = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.locationFound = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
         self.locationFound.pack(side='top',fill='x', padx=0, pady=5)
-        self.detail = ctk.CTkLabel(self, width=440, font=self.Font, text="")
+        self.detail = ctk.CTkLabel(self, width=440, font=self.Font, text="",anchor='w')
         self.detail.pack(side='top',fill='x', padx=0, pady=5)
 
     def update(self,name,cat,date,loc,detail,image):
-        self.name.configure(text=f"Item name: {name}")
-        self.category.configure(text=f"Category: {cat}")
-        self.dateFound.configure(text=f"Date found: {date}")
-        self.locationFound.configure(text=f"Location found: {loc}")
-        self.detail.configure(text=f"Details: {detail}")
-        rawImg = Image.open(image)
-        wpercent = (380/float(rawImg.size[0]))
-        hsize = int((float(rawImg.size[1])*float(wpercent)))
-        rawImg = rawImg.resize((380,hsize), Image.Resampling.LANCZOS)
-        img = ImageTk.PhotoImage(rawImg)
-        self.image.configure(image=img)
+        self.name.configure(text=f"          Item name: {name}")
+        self.category.configure(text=f"          Category: {cat}")
+        self.dateFound.configure(text=f"          Date found: {date}")
+        self.locationFound.configure(text=f"          Location found: {loc}")
+        self.detail.configure(text=f"          Details: {detail}")
+        if image != '':
+            self.image.configure(text="")
+            rawImg=Image.open(image)
+            wpercent = (380/float(rawImg.size[0]))
+            hsize = int((float(rawImg.size[1])*float(wpercent)))
+            rawImg = rawImg.resize((380,hsize), Image.Resampling.LANCZOS)
+            img = ImageTk.PhotoImage(rawImg)
+            self.image.configure(image=img)
+        else:
+            self.image.configure(image="")
+            self.image.configure(text="No image available")
+            self.image.configure(fg_color='lightgray')
 
 
 class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
@@ -175,43 +194,44 @@ class ListFrame(ctk.CTkScrollableFrame): # scrollable, width 400px
         super().__init__(master, **kwargs)
         self.Font = Font
         self.itemList = listItemDate()
+        self.master = master
+        self.count = 0
 
         self.fieldName = ctk.CTkLabel(self,text="  ItemName    |    Category    |     Date     |    Location", font=self.Font, anchor='w')
         self.fieldName.pack(side='top', fill='x', padx=0)
 
         self.buttonArray = self.createButtonArray(master)
-        for i in self.buttonArray:
-            i[0].pack(side='top',fill='x', pady=0)
+        self.buttonPack(self.itemList)
 
         
     def createButtonArray(self,master):
         buttonArray = []
-        count = 0
         for i in self.itemList:
-            buttonArray.append([ctk.CTkButton(self,text=self.format(i[1],i[2],i[3],i[4]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w', command=lambda m=count:master.itemClicked(m)), i[0]])
-            count += 1
+            buttonArray.append([ctk.CTkButton(self,text=self.format(i[1],i[2],i[3],i[4]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w', command=lambda m=self.count:master.itemClicked(m)), i[0]])
+            self.count += 1
         return buttonArray
+    
+    # def addButton(self):
+        # self.buttonArray.append([ctk.CTkButton(self,text=self.format(i[1],i[2],i[3],i[4]), font=self.Font, border_width=2, fg_color='white', text_color='black', anchor='w', command=lambda m=self.count:self.master.itemClicked(m)), i[0]])
     
     def unpack(self):
         for i in self.buttonArray:
             i[0].pack_forget()
 
     def buttonPack(self,newItemList):
-        self.itemList = newItemList
-        newButtonArray = self.buttonArray
-        for i in self.itemList:
-            for j in newButtonArray:
+        for i in newItemList:
+            for j in self.buttonArray:
                 if i[0] == j[1]:
                     j[0].pack(side='top', fill='x')
 
     def format(self,name,category,date,location):
-        spaceNum = int((13-len(name) + ((13-len(name)) % 2))/2)
+        spaceNum = int((15-len(name) + ((15-len(name)) % 2))/2)
         nameString = " "*spaceNum + name + " "*spaceNum 
-        spaceNum = int((15-len(category) + ((15-len(category)) % 2))/2)
+        spaceNum = int((18-len(category) + ((18-len(category)) % 2))/2)
         catString = " "*spaceNum + category + " "*spaceNum 
         spaceNum = int((12-len(date) + ((12-len(date)) % 2))/2)
         dateString = " "*spaceNum + date + " "*spaceNum 
-        spaceNum = int((15-len(location) + ((15-len(location)) % 2))/2)
+        spaceNum = int((10-len(location) + ((10-len(location)) % 2))/2)
         locString = " "*spaceNum + location
         return nameString + catString + dateString + locString
 
@@ -222,6 +242,8 @@ class AddItemWindow(ctk.CTkToplevel):
         self.resizable(False,False)
         self.title("Add Lost Item")
         self.myFont = ctk.CTkFont(family="Consolas", size=15)
+        self.imagepath = ''
+        self.master =master
 
         self.nameLabel = ctk.CTkLabel(self,text="Name that best describe the item:", font=self.myFont)
         self.nameLabel.grid(row=0,column=0,sticky='w', padx=10)
@@ -231,7 +253,7 @@ class AddItemWindow(ctk.CTkToplevel):
         self.catLabel.grid(row=2,column=0,sticky='w',padx=10,pady=(10,0))
         self.category = ctk.CTkComboBox(self,values=['Clothing', 'Bag', 'Stationary', 'Sports Equipment', 'Electronics', 'Accessory', 'Shoes'], font=self.myFont)
         self.category.grid(row=3,column=0,sticky='w', padx=10)
-        self.dateLabel = ctk.CTkLabel(self,text="Date that item was found:", font=self.myFont)
+        self.dateLabel = ctk.CTkLabel(self,text="Date that item was found (don't put 0 in front):", font=self.myFont)
         self.dateLabel.grid(row=4,column=0,sticky='w', padx=10, pady=(10,0))
         self.date = ctk.CTkEntry(self,placeholder_text="DD/MM/YYYY", width=360, font=self.myFont)
         self.date.grid(row=5,column=0,sticky='w', padx=10)
@@ -239,15 +261,32 @@ class AddItemWindow(ctk.CTkToplevel):
         self.locLabel.grid(row=6,column=0,sticky='w', padx=10, pady=(10,0))
         self.location = ctk.CTkComboBox(self,values=['SB', 'SC', 'PAC', 'WEC', 'CGA', 'Dining hall', 'Collingwood'], font=self.myFont)
         self.location.grid(row=7,column=0,sticky='w', padx=10)
-        self.imageEntry = ctk.CTkEntry(self,placeholder_text="path to your image file", font=self.myFont)
-        # self.imageEntry.bind('<Return>',lambda m:self.storeImage(self.imageEntry.get()))
-        # self.imageEntry.grid()
+        self.detailLabel = ctk.CTkLabel(self,text="Additional details on the item:", font=self.myFont)
+        self.detailLabel.grid(row=8,column=0,sticky='w', padx=10, pady=(10,0))
+        self.detail = ctk.CTkEntry(self, width=360, font=self.myFont)
+        self.detail.grid(row=9,column=0,sticky='w', padx=10)
+        self.addImageButton = ctk.CTkButton(self, text="Add image of item", font=self.myFont, command=self.storeImage)
+        self.addImageButton.grid(row=10,column=0,sticky='w', padx=(10,0), pady=(10,0))
+        self.addItemButton = ctk.CTkButton(self, text="Add item", font=self.myFont, command=self.addItemDatabase)
+        self.addItemButton.grid(row=11,column=0, sticky = 'w', padx=10, pady=(10,0))
 
-    def storeImage(self,filePath):
-        fileName = os.path.split(filePath)[1]
-        img = cv2.imread(filePath)
+    def storeImage(self):
+        root = tk.Tk()
+        root.withdraw()
+        fn = askopenfilename()
+        root.destroy()
+        img = cv2.imread(fn)
+        print(fn)
+        fileName = os.path.split(fn)[1]
         print(fileName)
-        cv2.imwrite(r'D:\Users\Otsute\VScode\LostAndFound\LostAndFound\Images/' + fileName, img)
+        cv2.imwrite(r'D:/Users/Otsute/VScode/LostAndFound/LostAndFound/Images/' + fileName, img)
+        self.imagepath = r'D:/Users/Otsute/VScode/LostAndFound/LostAndFound/Images/' + fileName
+
+    def addItemDatabase(self):
+        id = LastID()[0][0] +1
+        addItem(id, self.name.get(), self.category.get(), self.date.get(), self.location.get(), self.detail.get(), self.imagepath)
+        self.imagepath = ''
+        self.destroy()
 
 app = App()
 app.mainloop()
