@@ -159,7 +159,7 @@ class DetailFrame(ctk.CTkFrame):
         self.Font = Font
         self.selectedItem = None
 
-        self.image = ctk.CTkLabel(self, width=380, text = "")
+        self.image = ctk.CTkLabel(self, width=360, text = "")
         self.image.pack(side='top', padx=5, pady=5)
         self.name = ctk.CTkLabel(self, width=416, font=self.Font, text="",anchor='w')
         self.name.pack(side='top',fill='x', padx=5, pady=5)
@@ -183,7 +183,7 @@ class DetailFrame(ctk.CTkFrame):
         if image != '':
             self.image.configure(text="")
             my_image = ctk.CTkImage(light_image=Image.open(image),
-                                    size=(380,400))
+                                    size=(360,400))
             self.image.configure(image=my_image)
         else:
             self.image.configure(image="")
