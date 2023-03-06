@@ -30,6 +30,13 @@ def searchItem(item):
   conn.close()
   return list
 
+def deleteItem(id):
+  conn = sqlite3.connect('database.db')
+  c = conn.cursor()
+  c.execute("DELETE FROM lostItems WHERE id=?",(id))
+  conn.commit()
+  conn.close()
+
 def addItem(id,item,category,date,location,detail,image):
   conn = sqlite3.connect('database.db')
   c = conn.cursor()
@@ -90,7 +97,7 @@ def LastID():
 
 
 # addUser('Otsute', '123')
-
+# print(searchItem('Nike Hat'))
 # print(listItemCategory())
 
 conn.close()
