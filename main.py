@@ -2,11 +2,10 @@ import customtkinter as ctk
 import tkinter as tk
 from tkinter.messagebox import askyesno
 from tkinter.filedialog import askopenfilename
-import numpy
 import cv2
 import os
 from Database import *
-from PIL import ImageTk, Image
+from PIL import Image
 
 ctk.set_appearance_mode('light')
 ctk.set_default_color_theme('dark-blue')
@@ -20,7 +19,7 @@ class App(ctk.CTk):
         self.geometry("380x430+700+260")
         # self.geometry('900x700+380+50')
         self.title("Lost and Found")
-        self.iconbitmap(True,'magnifyingglass_102622.ico')
+        self.iconbitmap(True,'magnifyingglass_23798.ico')
         self.resizable(False,False)
 
         # add widgets to app
